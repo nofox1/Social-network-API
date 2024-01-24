@@ -10,7 +10,7 @@ const userController = {
       })
       .select("-__v")
       .sort({ _id: -1 })
-      .then((dbUserData) => res.json(dbUserData))
+      .then((userData) => res.json(userData))
       .catch((err) => {
         console.log(err);
         res.sendStatus(400);
@@ -29,13 +29,13 @@ const userController = {
         select: "-__v",
       })
       .select("-__v")
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((userData) => {
+        if (!userData) {
           return res
             .status(404)
             .json({ message: "No user found with this id!" });
         }
-        res.json(dbUserData);
+        res.json(userData);
       })
       .catch((err) => {
         console.log(err);
@@ -43,10 +43,10 @@ const userController = {
       });
   },
 
-  // create user
+  // create a user
   createUser({ body }, res) {
     User.create(body)
-      .then((dbUserData) => res.json(dbUserData))
+      .then((userData) => res.json(userData))
       .catch((err) => res.json(err));
   },
 
@@ -56,62 +56,60 @@ const userController = {
       new: true,
       runValidators: true,
     })
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((userData) => {
+        if (!userData) {
           res.status(404).json({ message: "No user found with this id!" });
           return;
         }
-        res.json(dbUserData);
+        res.json(userData);
       })
       .catch((err) => res.json(err));
   },
 
-  // delete user
+  // delete a user
   deleteUser({ params }, res) {
     User.findOneAndDelete({ _id: params.id })
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((userData) => {
+        if (!userData) {
           return res.status(404).json({ message: "No user with this id!" });
         }
-        // BONUS: get ids of user's `thoughts` and delete them all
-        // $in to find specific things
-        return Thought.deleteMany({ _id: { $in: dbUserData.thoughts } });
+        return Thought.deleteMany({ _id: { $in: userData.thoughts } });
       })
       .then(() => {
-        res.json({ message: "User and associated thoughts deleted!" });
+        res.json({ message: "User and thoughts deleted!" });
       })
       .catch((err) => res.json(err));
   },
 
-  // add friend
+  // add a friend
   addFriend({ params }, res) {
     User.findOneAndUpdate(
       { _id: params.userId },
       { $addToSet: { friends: params.friendId } },
       { new: true, runValidators: true }
     )
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((userData) => {
+        if (!userData) {
           res.status(404).json({ message: "No user with this id" });
           return;
         }
-        res.json(dbUserData);
+        res.json(userData);
       })
       .catch((err) => res.json(err));
   },
 
-  // delete friend
+  // delete a friend
   removeFriend({ params }, res) {
     User.findOneAndUpdate(
       { _id: params.userId },
       { $pull: { friends: params.friendId } },
       { new: true }
     )
-      .then((dbUserData) => {
-        if (!dbUserData) {
+      .then((userData) => {
+        if (!userData) {
           return res.status(404).json({ message: "No user with this id!" });
         }
-        res.json(dbUserData);
+        res.json(userData);
       })
       .catch((err) => res.json(err));
   },
