@@ -44,7 +44,7 @@ const userController = {
       .then((userData) => res.json(userData))
       .catch((err) => res.json(err));
   },
-  updateUser({ params, body }, res) {
+  updateUsers({ params, body }, res) {
     User.findOneAndUpdate({ _id: params.id }, body, {
       new: true,
       runValidators: true,
@@ -58,7 +58,7 @@ const userController = {
       })
       .catch((err) => res.json(err));
   },
-  deleteUser({ params }, res) {
+  deleteUsers({ params }, res) {
     User.findOneAndDelete({ _id: params.id })
       .then((userData) => {
         if (!userData) {
@@ -71,7 +71,7 @@ const userController = {
       })
       .catch((err) => res.json(err));
   },
-  addFriend({ params }, res) {
+  addFriends({ params }, res) {
     User.findOneAndUpdate(
       { _id: params.userId },
       { $addToSet: { friends: params.friendId } },
@@ -86,7 +86,7 @@ const userController = {
       })
       .catch((err) => res.json(err));
   },
-  removeFriend({ params }, res) {
+  removeFriends({ params }, res) {
     User.findOneAndUpdate(
       { _id: params.userId },
       { $pull: { friends: params.friendId } },

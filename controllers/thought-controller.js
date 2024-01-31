@@ -54,7 +54,7 @@ const thoughtController = {
       })
       .catch((err) => res.json(err));
   },
-  updateThought({ params, body }, res) {
+  updateThoughts({ params, body }, res) {
     Thought.findOneAndUpdate({ _id: params.id }, body, {
       new: true,
       runValidators: true,
@@ -68,7 +68,7 @@ const thoughtController = {
       })
       .catch((err) => res.json(err));
   },
-  deleteThought({ params }, res) {
+  deleteThoughts({ params }, res) {
     Thought.findOneAndDelete({ _id: params.id })
       .then((thoughtData) => {
         if (!thoughtData) {
@@ -90,7 +90,7 @@ const thoughtController = {
       })
       .catch((err) => res.json(err));
   },
-  addReaction({ params, body }, res) {
+  addReactions({ params, body }, res) {
     Thought.findOneAndUpdate(
       { _id: params.thoughtId },
       { $addToSet: { reactions: body } },
@@ -105,7 +105,7 @@ const thoughtController = {
       })
       .catch((err) => res.json(err));
   },
-  removeReaction({ params }, res) {
+  removeReactions({ params }, res) {
     Thought.findOneAndUpdate(
       { _id: params.thoughtId },
       { $pull: { reactions: { reactionId: params.reactionId } } },
