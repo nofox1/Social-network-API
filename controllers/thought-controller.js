@@ -47,7 +47,7 @@ const thoughtsController = {
         if (!userData) {
           return res
             .status(404)
-            .json({ message: "Thought created but no user with this id!" });
+            .json({ message: "Thought created but no id for this user!" });
         }
 
         res.json({ message: "Thought created!" });
@@ -84,9 +84,9 @@ const thoughtsController = {
         if (!userData) {
           return res
             .status(404)
-            .json({ message: "Thought created but no user with this id!" });
+            .json({ message: "Thought created but no id for this user!" });
         }
-        res.json({ message: "Thought successfully deleted!" });
+        res.json({ message: "Thought deleted!" });
       })
       .catch((err) => res.json(err));
   },
