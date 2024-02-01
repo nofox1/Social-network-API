@@ -1,6 +1,6 @@
 const { Thought, User } = require("../models");
 
-const thoughtController = {
+const thoughtsController = {
   getAllThoughts(req, res) {
     Thought.find({})
       .populate({
@@ -116,4 +116,4 @@ const thoughtController = {
   },
 };
 
-module.exports = thoughtController;
+module.exports = thoughtsController;
