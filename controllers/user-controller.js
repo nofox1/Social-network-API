@@ -11,29 +11,22 @@ const usersController = {
       res.status(500).json(err);
     }
   },
-  getUserById({ params }, res) {
-    User.findOne({ _id: params.id })
-      .populate({
-        path: "thoughts",
-        select: "-__v",
-      })
-      .populate({
-        path: "friends",
-        select: "-__v",
-      })
-      .select("-__v")
-      .then((userData) => {
-        if (!userData) {
-          return res
-            .status(404)
-            .json({ message: "No user found with this id!" });
-        }
-        res.json(userData);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.sendStatus(400);
-      });
+  async getUserBySingleId(req, res) {
+    try {
+      const userData = await User.findOne({ _id: req.params.userId })
+        .select("-__v")
+        .populate("friends")
+        .populate("thoughts");
+
+      if (!userData) {
+        return res.status(404).json({ message: "No user with that id!" });
+      }
+
+      res.json(userData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   },
   createUser({ body }, res) {
     User.create(body)
