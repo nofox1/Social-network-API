@@ -70,7 +70,6 @@ const usersController = {
         return res.status(404).json({ message: "No user with that id!" });
       }
 
-      // BONUS: get ids of user's `thoughts` and delete them all
       await Thought.deleteMany({ _id: { $in: userData.thoughts } });
       res.json({ message: "User and thoughts deleted associated by user id!" });
     } catch (err) {
@@ -78,20 +77,23 @@ const usersController = {
       res.status(500).json(err);
     }
   },
-  addFriends({ params }, res) {
-    User.findOneAndUpdate(
-      { _id: params.userId },
-      { $addToSet: { friends: params.friendId } },
-      { new: true, runValidators: true }
-    )
-      .then((userData) => {
-        if (!userData) {
-          res.status(404).json({ message: "No user with this id" });
-          return;
-        }
-        res.json(userData);
-      })
-      .catch((err) => res.json(err));
+  async addFriends(req, res) {
+    try {
+      const userData = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $addToSet: { friends: req.params.friendId } },
+        { new: true }
+      );
+
+      if (!userData) {
+        return res.status(404).json({ message: "No user with that id!" });
+      }
+
+      res.json(userData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   },
   removeFriends({ params }, res) {
     User.findOneAndUpdate(
