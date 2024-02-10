@@ -48,19 +48,21 @@ const thoughtController = {
       })
       .catch((err) => res.json(err));
   },
-  updateThoughts({ params, body }, res) {
-    Thought.findOneAndUpdate({ _id: params.id }, body, {
-      new: true,
-      runValidators: true,
-    })
-      .then((thoughtData) => {
-        if (!thoughtData) {
-          res.status(404).json({ message: "No thought found with this id!" });
-          return;
-        }
-        res.json(thoughtData);
-      })
-      .catch((err) => res.json(err));
+  async updateThought(req, res) {
+    const thoughtData = await Thought.findOneAndUpdate(
+      { _id: req.params.thoughtId },
+      { $set: req.body },
+      { runValidators: true, new: true }
+    );
+
+    if (!thoughtData) {
+      return res.status(404).json({ message: "No thought with this id!" });
+    }
+
+    res.json(thoughtData);
+
+    console.log(err);
+    res.status(500).json(err);
   },
   deleteThoughts({ params }, res) {
     Thought.findOneAndDelete({ _id: params.id })
