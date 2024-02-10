@@ -28,25 +28,29 @@ const thoughtController = {
       res.status(500).json(err);
     }
   },
-  createThought({ params, body }, res) {
-    Thought.create(body)
-      .then(({ _id }) => {
-        return User.findOneAndUpdate(
-          { _id: body.userId },
-          { $push: { thoughts: _id } },
-          { new: true }
-        );
-      })
-      .then((userData) => {
-        if (!userData) {
-          return res
-            .status(404)
-            .json({ message: "Thought created but no id for this user!" });
-        }
+  async createThought(req, res) {
+    try {
+      const thoughtData = await Thought.create(req.body);
 
-        res.json({ message: "Thought created!" });
-      })
-      .catch((err) => res.json(err));
+      const userData = await User.findOneAndUpdate(
+        { _id: req.body.userId },
+        { $push: { thoughts: thoughtData._id } },
+        { new: true }
+      );
+
+      if (!userData) {
+        return res
+          .status(404)
+          .json({
+            message: "Thought created but didn't find a user with this id!",
+          });
+      }
+
+      res.json({ message: "Thought successfully created!" });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   },
   async updateThought(req, res) {
     const thoughtData = await Thought.findOneAndUpdate(
