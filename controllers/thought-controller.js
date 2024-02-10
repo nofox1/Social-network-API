@@ -39,14 +39,12 @@ const thoughtController = {
       );
 
       if (!userData) {
-        return res
-          .status(404)
-          .json({
-            message: "Thought created but didn't find a user with this id!",
-          });
+        return res.status(404).json({
+          message: "Thought created but didn't find a user with this id!",
+        });
       }
 
-      res.json({ message: "Thought successfully created!" });
+      res.json({ message: "Thought created!" });
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -68,27 +66,34 @@ const thoughtController = {
     console.log(err);
     res.status(500).json(err);
   },
-  deleteThoughts({ params }, res) {
-    Thought.findOneAndDelete({ _id: params.id })
-      .then((thoughtData) => {
-        if (!thoughtData) {
-          return res.status(404).json({ message: "No thought with this id!" });
-        }
-        return User.findOneAndUpdate(
-          { thoughts: params.id },
-          { $pull: { thoughts: params.id } },
-          { new: true }
-        );
-      })
-      .then((userData) => {
-        if (!userData) {
-          return res
-            .status(404)
-            .json({ message: "Thought created but no id for this user!" });
-        }
-        res.json({ message: "Thought deleted!" });
-      })
-      .catch((err) => res.json(err));
+  async deleteThoughts(req, res) {
+    try {
+      const thoughtData = await Thought.findOneAndRemove({
+        _id: req.params.thoughtId,
+      });
+
+      if (!thoughtData) {
+        return res.status(404).json({ message: "No thought with that id!" });
+      }
+
+      // remove thought id from user's `thoughts` field
+      const userData = User.findOneAndUpdate(
+        { thoughts: req.params.thoughtId },
+        { $pull: { thoughts: req.params.thoughtId } },
+        { new: true }
+      );
+
+      if (!userData) {
+        return res.status(404).json({
+          message: "Thought created but didn't find a user with this id!",
+        });
+      }
+
+      res.json({ message: "Thought deleted!" });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   },
   addReactions({ params, body }, res) {
     Thought.findOneAndUpdate(
