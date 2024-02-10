@@ -28,10 +28,14 @@ const usersController = {
       res.status(500).json(err);
     }
   },
-  createUser({ body }, res) {
-    User.create(body)
-      .then((userData) => res.json(userData))
-      .catch((err) => res.json(err));
+  async createUser(req, res) {
+    try {
+      const userData = await User.create(req.body);
+      res.json(userData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   },
   updateUsers({ params, body }, res) {
     User.findOneAndUpdate({ _id: params.id }, body, {
