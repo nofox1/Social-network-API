@@ -12,24 +12,21 @@ const thoughtController = {
       res.status(500).json(err);
     }
   },
-
-  getThoughtById({ params }, res) {
-    Thought.findOne({ _id: params.id })
-      .populate({
-        path: "reactions",
-        select: "-__v",
-      })
-      .select("-__v")
-      .then((thoughtData) => {
-        if (!thoughtData) {
-          return res.status(404).json({ message: "No thought with this id!" });
-        }
-        res.json(thoughtData);
-      })
-      .catch((err) => {
-        console.log(err);
-        res.sendStatus(400);
+  async getSingleThoughtById(req, res) {
+    try {
+      const thoughtData = await Thought.findOne({
+        _id: req.params.thoughtId,
       });
+
+      if (!thoughtData) {
+        return res.status(404).json({ message: "No thought with this id!" });
+      }
+
+      res.json(thoughtData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   },
   createThought({ params, body }, res) {
     Thought.create(body)
