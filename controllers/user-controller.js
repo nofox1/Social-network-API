@@ -95,19 +95,23 @@ const usersController = {
       res.status(500).json(err);
     }
   },
-  removeFriends({ params }, res) {
-    User.findOneAndUpdate(
-      { _id: params.userId },
-      { $pull: { friends: params.friendId } },
-      { new: true }
-    )
-      .then((userData) => {
-        if (!userData) {
-          return res.status(404).json({ message: "No user with this id!" });
-        }
-        res.json(userData);
-      })
-      .catch((err) => res.json(err));
+  async removeFriends(req, res) {
+    try {
+      const userData = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $pull: { friends: req.params.friendId } },
+        { new: true }
+      );
+
+      if (!userData) {
+        return res.status(404).json({ message: "No user with that id!" });
+      }
+
+      res.json(userData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   },
 };
 module.exports = usersController;
