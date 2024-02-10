@@ -75,8 +75,6 @@ const thoughtController = {
       if (!thoughtData) {
         return res.status(404).json({ message: "No thought with that id!" });
       }
-
-      // remove thought id from user's `thoughts` field
       const userData = User.findOneAndUpdate(
         { thoughts: req.params.thoughtId },
         { $pull: { thoughts: req.params.thoughtId } },
@@ -95,20 +93,23 @@ const thoughtController = {
       res.status(500).json(err);
     }
   },
-  addReactions({ params, body }, res) {
-    Thought.findOneAndUpdate(
-      { _id: params.thoughtId },
-      { $addToSet: { reactions: body } },
-      { new: true, runValidators: true }
-    )
-      .then((thoughtData) => {
-        if (!thoughtData) {
-          res.status(404).json({ message: "No thought with this id" });
-          return;
-        }
-        res.json(thoughtData);
-      })
-      .catch((err) => res.json(err));
+  async addReactions(req, res) {
+    try {
+      const thoughtData = await Thought.findOneAndUpdate(
+        { _id: req.params.thoughtId },
+        { $addToSet: { reactions: req.body } },
+        { runValidators: true, new: true }
+      );
+
+      if (!thoughtData) {
+        return res.status(404).json({ message: "No thought with that id!" });
+      }
+
+      res.json(thoughtData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   },
   async removeReactions(req, res) {
     try {
