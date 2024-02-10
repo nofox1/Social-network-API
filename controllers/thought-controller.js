@@ -1,19 +1,16 @@
 const { Thought, User } = require("../models");
 
-const thoughtsController = {
-  getAllThoughts(req, res) {
-    Thought.find({})
-      .populate({
-        path: "reactions",
-        select: "-__v",
-      })
-      .select("-__v")
-      .sort({ _id: -1 })
-      .then((thoughtData) => res.json(thoughtData))
-      .catch((err) => {
-        console.log(err);
-        res.sendStatus(400);
-      });
+const thoughtController = {
+  // get all thoughts
+  async getThoughts(req, res) {
+    try {
+      const thoughtData = await Thought.find().sort({ createdAt: -1 });
+
+      res.json(thoughtData);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
   },
 
   getThoughtById({ params }, res) {
@@ -116,4 +113,4 @@ const thoughtsController = {
   },
 };
 
-module.exports = thoughtsController;
+module.exports = thoughtController;
